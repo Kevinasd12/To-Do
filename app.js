@@ -24,9 +24,12 @@ const confirmar = document.getElementById("confirmar");
 // verificando en memoria si tiene tareas
 
 let tasks = JSON.parse(localStorage.getItem("data")) || [];
-
+let currentEditTask = {}
 
 const addOrUpdateTask = () => {
+    console.log(currentEditTask)
+    let checkingIsEditOrAdd =  tasks.findIndex( p => p.id === currentEditTask.id)
+
     let currentTask = {
         id: Date.now(),
         titulo: title.value,
@@ -34,15 +37,22 @@ const addOrUpdateTask = () => {
         descripcion: description.value,
     };
 
-    tasks.push(currentTask);
+    if (checkingIsEditOrAdd === -1){
+        tasks.unshift(currentTask);
+    }
+    else {
+        tasks[checkingIsEditOrAdd] = currentTask
+    }
     localStorage.setItem("data", JSON.stringify(tasks));
-
+    UpdateTasks()
 };
 
 // mostrando todo lo que tiene en localstorage
 
 const UpdateTasks = () => {
     containerTask.innerHTML = "";
+
+
     tasks.forEach(({ id, titulo, fecha, descripcion }) => {
         containerTask.innerHTML += `
     <div
@@ -61,16 +71,21 @@ const UpdateTasks = () => {
                     </p>
                     <div class="flex flex-wrap justify-around w-full mb-2">
                         <button
+                            id="delete"
                             class="bg-slate-600 hover:bg-slate-800 text-white rounded-full font-medium border border-black px-3 py-1"
                         >
                             Delete
                         </button>
                         <button
-                            class="bg-slate-600 hover:bg-slate-800 text-white rounded-full font-medium border border-black px-3 py-1"
+                            onclick="editTask(${id})"
+                            id="edit"
+                            class="bg-slate-600 hover:bg-slate-800 text-white rounded-full font-medium border border-black px-4 py-1"
                         >
                             Editar
                         </button>
                         <button
+                        
+                            id="completado"
                             class="bg-slate-600 hover:bg-slate-800 text-white rounded-full font-medium border border-black px-3 py-1"
                         >
                             Completar
@@ -81,7 +96,7 @@ const UpdateTasks = () => {
     });
 };
 
- UpdateTasks();
+UpdateTasks();
 
 const cierreDeVentana = () => {
     modal.classList.add("hidden");
@@ -107,7 +122,7 @@ closeForm.addEventListener("click", () => {
         cierreDeVentana();
     } else {
         modal.classList.remove("z-10");
-        modal.classList.add("z-20");
+        modal.classList.add("z-30");
         confirmation.classList.remove("hidden");
 
         // Ventana emergente de confirmacion
@@ -115,21 +130,45 @@ closeForm.addEventListener("click", () => {
             title.value = "";
             date.value = "";
             description.value = "";
-            modal.classList.remove("z-20");
+            modal.classList.remove("z-30");
             modal.classList.add("z-10");
             confirmation.classList.add("hidden");
             cierreDeVentana();
         });
         cancelar.addEventListener("click", () => {
-            modal.classList.remove("z-20");
+            modal.classList.remove("z-30");
             modal.classList.add("z-10");
             confirmation.classList.add("hidden");
         });
     }
 });
 
+
+// Cuando se manda el formualrio
 containerForm.addEventListener("submit", (event) => {
     event.preventDefault();
     addOrUpdateTask();
     cierreDeVentana();
 });
+
+// edit button 
+
+const edit = document.getElementById('edit')
+
+const editTask = (idElement) => {
+    
+
+    const indexPosition = tasks.findIndex(
+        (p) => p.id === idElement
+    );
+    
+    
+    currentEditTask = tasks[indexPosition];
+    console.log(currentEditTask);
+
+    title.value =`${currentEditTask.titulo}`;
+    date.value = `${currentEditTask.fecha}`;
+    description.value =`${currentEditTask.descripcion}`;
+    mostrarVentana()
+
+};
