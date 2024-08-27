@@ -71,7 +71,7 @@ const UpdateTasks = () => {
                     </p>
                     <div class="flex flex-wrap justify-around w-full mb-2">
                         <button
-                            id="delete"
+                            id="delete  "
                             class="bg-slate-600 hover:bg-slate-800 text-white rounded-full font-medium border border-black px-3 py-1"
                         >
                             Delete
