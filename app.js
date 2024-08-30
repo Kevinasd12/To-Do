@@ -24,11 +24,12 @@ const confirmar = document.getElementById("confirmar");
 // verificando en memoria si tiene tareas
 
 let tasks = JSON.parse(localStorage.getItem("data")) || [];
-let currentEditTask = {}
+let currentEditTask = {};
 
 const addOrUpdateTask = () => {
-    console.log(currentEditTask)
-    let checkingIsEditOrAdd =  tasks.findIndex( p => p.id === currentEditTask.id)
+    let checkingIsEditOrAdd = tasks.findIndex(
+        (p) => p.id === currentEditTask.id
+    );
 
     let currentTask = {
         id: Date.now(),
@@ -37,14 +38,13 @@ const addOrUpdateTask = () => {
         descripcion: description.value,
     };
 
-    if (checkingIsEditOrAdd === -1){
+    if (checkingIsEditOrAdd === -1) {
         tasks.unshift(currentTask);
-    }
-    else {
-        tasks[checkingIsEditOrAdd] = currentTask
+    } else {
+        tasks[checkingIsEditOrAdd] = currentTask;
     }
     localStorage.setItem("data", JSON.stringify(tasks));
-    UpdateTasks()
+    UpdateTasks();
 };
 
 // mostrando todo lo que tiene en localstorage
@@ -52,11 +52,10 @@ const addOrUpdateTask = () => {
 const UpdateTasks = () => {
     containerTask.innerHTML = "";
 
-
     tasks.forEach(({ id, titulo, fecha, descripcion }) => {
         containerTask.innerHTML += `
     <div
-                    class="mb-3 bg-slate-300 flex flex-col justify-between min-h-36 sm:w-3/4 rounded border border-black gap-y-5"
+                    class="mb-3 bg-slate-300 flex flex-col min-h-36 sm:w-3/4 rounded border border-black justify-between gap-y-5"
                     id="${id}"
                 >
                     <p class="font-semibold break-words ml-2 text-justify">
@@ -69,27 +68,22 @@ const UpdateTasks = () => {
                         Descripción:<span class="font-normal">${descripcion}</span
                         >
                     </p>
-                    <div class="flex flex-wrap justify-around w-full mb-2">
+                    <div class="flex flex-auto justify-around w-full items-center gap-y-0">
                         <button
-                            id="delete  "
-                            class="bg-slate-600 hover:bg-slate-800 text-white rounded-full font-medium border border-black px-3 py-1"
+                            onclick="deleting(${id})"
+                            id="delete"
+                            class="bg-slate-600 sm:w-24 hover:bg-slate-800 text-white rounded-full mt-5 font-medium text-1xl border border-black px-6 py-2 mb-4"
                         >
                             Delete
                         </button>
                         <button
                             onclick="editTask(${id})"
                             id="edit"
-                            class="bg-slate-600 hover:bg-slate-800 text-white rounded-full font-medium border border-black px-4 py-1"
+                            class="bg-slate-600 sm:w-24 hover:bg-slate-800 text-white rounded-full mt-5 font-medium text-1xl border border-black px-6 py-2 mb-4"
                         >
                             Editar
                         </button>
-                        <button
-                        
-                            id="completado"
-                            class="bg-slate-600 hover:bg-slate-800 text-white rounded-full font-medium border border-black px-3 py-1"
-                        >
-                            Completar
-                        </button>
+                       
                     </div>
                 </div>
     `;
@@ -143,7 +137,6 @@ closeForm.addEventListener("click", () => {
     }
 });
 
-
 // Cuando se manda el formualrio
 containerForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -151,24 +144,28 @@ containerForm.addEventListener("submit", (event) => {
     cierreDeVentana();
 });
 
-// edit button 
+// edit button
 
-const edit = document.getElementById('edit')
+const edit = document.getElementById("edit");
 
 const editTask = (idElement) => {
-    
+    const indexPosition = tasks.findIndex((p) => p.id === idElement);
 
-    const indexPosition = tasks.findIndex(
-        (p) => p.id === idElement
-    );
-    
-    
     currentEditTask = tasks[indexPosition];
-    console.log(currentEditTask);
 
-    title.value =`${currentEditTask.titulo}`;
+    title.value = `${currentEditTask.titulo}`;
     date.value = `${currentEditTask.fecha}`;
-    description.value =`${currentEditTask.descripcion}`;
-    mostrarVentana()
+    description.value = `${currentEditTask.descripcion}`;
+    mostrarVentana();
+};
 
+const deletebtn = document.getElementById("delete");
+
+const deleting = (idElement) => {
+    const indexPosition = tasks.findIndex((p) => p.id === idElement);
+
+    tasks.splice(indexPosition, 1);
+
+    localStorage.setItem("data", JSON.stringify(tasks));
+    UpdateTasks();
 };
